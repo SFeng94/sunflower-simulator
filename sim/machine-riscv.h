@@ -38,6 +38,8 @@
 struct RiscvState
 {
 	uint32_t R[RISCV_XMAX];
+	float F[32];
+	uint32_t FCSR;
 	RiscvPipe P;
 };
 

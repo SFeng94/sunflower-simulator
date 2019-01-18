@@ -448,7 +448,7 @@ void riscvdecode(Engine *E, uint32_t instr, RiscvPipestage *stage)
             {
                 case 0b000:
                 {
-                    if (tmp->b20)
+                    if (tmp->rs2 & 1)
                     {
                         stage->fptr = (void *) riscv_ecall;
                         stage->format = INSTR_I;
@@ -513,10 +513,405 @@ void riscvdecode(Engine *E, uint32_t instr, RiscvPipestage *stage)
                 }
                 default:
                 {
-                    
+
                 }
             }
 
+            break;
+        }
+        /* sf548 - rv32f operation decode */
+        case 0b0000111:
+        {
+            switch(tmp->funct3)
+            {
+                case 0b010:
+                {
+                    stage->fptr = (void *) riscv_flw;
+                    stage->format = INSTR_I;
+                    stage->op = RISCV_OP_FLW;
+
+                    break;
+                }
+                default:
+                {
+
+                }
+            }
+            break;
+        }
+        case 0b0100111:
+        {
+            switch(tmp->funct3)
+            {
+                case 0b010:
+                {
+                    stage->fptr = (void *) riscv_fsw;
+                    stage->format = INSTR_S;
+                    stage->op = RISCV_OP_FSW;
+
+                    break;
+                }
+                default:
+                {
+
+                }
+            }
+            break;
+        }
+        case 0b1000011:
+        {
+            switch(tmp->funct7 & 0b11)
+            {
+                case 0b00:
+                {
+                    stage->fptr = (void *) riscv_fmadd_s;
+                    stage->format = INSTR_R4;
+                    stage->op = RISCV_OP_FMADD_S;
+
+                    break;
+                }
+                default:
+                {
+
+                }
+            }
+            break;
+        }
+        case 0b1000111:
+        {
+            switch(tmp->funct7 & 0b11)
+            {
+                case 0b00:
+                {
+                    stage->fptr = (void *) riscv_fmsub_s;
+                    stage->format = INSTR_R4;
+                    stage->op = RISCV_OP_FMSUB_S;
+
+                    break;
+                }
+                default:
+                {
+
+                }
+            }
+            break;
+        }
+        case 0b1001011:
+        {
+            switch(tmp->funct7 & 0b11)
+            {
+                case 0b00:
+                {
+                    stage->fptr = (void *) riscv_fnmsub_s;
+                    stage->format = INSTR_R4;
+                    stage->op = RISCV_OP_FNMSUB_S;
+
+                    break;
+                }
+                default:
+                {
+
+                }
+            }
+            break;
+        }
+        case 0b1001111:
+        {
+            switch(tmp->funct7 & 3)
+            {
+                case 0b00:
+                {
+                    stage->fptr = (void *) riscv_fnmadd_s;
+                    stage->format = INSTR_R4;
+                    stage->op = RISCV_OP_FNMADD_S;
+
+                    break;
+                }
+                default:
+                {
+
+                }
+            }
+            break;
+        }
+        case 0b1010011:
+        {
+            switch(tmp->funct7)
+            {
+                case 0b0000000:
+                {
+                    stage->fptr = (void *) riscv_fadd_s;
+                    stage->format = INSTR_R_F;
+                    stage->op = RISCV_OP_FADD_S;
+
+                    break;
+                }
+                case 0b0000100:
+                {
+                    stage->fptr = (void *) riscv_fsub_s;
+                    stage->format = INSTR_R_F;
+                    stage->op = RISCV_OP_FSUB_S;
+
+                    break;
+                }
+                case 0b0001000:
+                {
+                    stage->fptr = (void *) riscv_fmul_s;
+                    stage->format = INSTR_R_F;
+                    stage->op = RISCV_OP_FMUL_S;
+
+                    break;
+                }
+                case 0b0001100:
+                {
+                    stage->fptr = (void *) riscv_fdiv_s;
+                    stage->format = INSTR_R_F;
+                    stage->op = RISCV_OP_FDIV_S;
+
+                    break;
+                }
+                case 0b0101100:
+                {
+                    switch(tmp->rs2)
+                    {
+                        case 0b00000:
+                        {
+                            stage->fptr = (void *) riscv_fsqrt_s;
+                            stage->format = INSTR_R_F;
+                            stage->op = RISCV_OP_FSQRT_S;
+
+                            break;
+                        }
+                        default:
+                        {
+
+                        }
+                    }
+                }
+                case 0b0010000:
+                {
+                    switch(tmp->funct3)
+                    {
+                        case 0b000:
+                        {
+                            stage->fptr = (void *) riscv_fsgnj_s;
+                            stage->format = INSTR_R;
+                            stage->op = RISCV_OP_FSGNJ_S;
+
+                            break;
+                        }
+                        case 0b001:
+                        {
+                            stage->fptr = (void *) riscv_fsgnjn_s;
+                            stage->format = INSTR_R;
+                            stage->op = RISCV_OP_FSGNJN_S;
+
+                            break;
+                        }
+                        case 0b010:
+                        {
+                            stage->fptr = (void *) riscv_fsgnjx_s;
+                            stage->format = INSTR_R;
+                            stage->op = RISCV_OP_FSGNJX_S;
+
+                            break;
+                        }
+                        default:
+                        {
+
+                        }
+                    }
+                }
+                case 0b0010100:
+                {
+                    switch(tmp->funct3)
+                    {
+                        case 0b000:
+                        {
+                            stage->fptr = (void *) riscv_fmin_s;
+                            stage->format = INSTR_R_F;
+                            stage->op = RISCV_OP_FMIN_S;
+
+                            break;
+                        }
+                        case 0b001:
+                        {
+                            stage->fptr = (void *) riscv_fmax_s;
+                            stage->format = INSTR_R_F;
+                            stage->op = RISCV_OP_FMAX_S;
+
+                            break;
+                        }
+                        default:
+                        {
+
+                        }
+                    }
+
+                    break;
+                }
+                case 0b1100000:
+                {
+                    switch(tmp->rs2)
+                    {
+                        case 0b00000:
+                        {
+                            stage->fptr = (void *) riscv_fcvt_w_s;
+                            stage->format = INSTR_R_F;
+                            stage->op = RISCV_OP_FCVT_W_S;
+
+                            break;
+                        }
+                        case 0b00001:
+                        {
+                            stage->fptr = (void *) riscv_fcvt_wu_s;
+                            stage->format = INSTR_R_F;
+                            stage->op = RISCV_OP_FCVT_WU_S;
+
+                            break;
+                        }
+                        default:
+                        {
+
+                        }
+                    }
+                    break;
+                }
+                case 0b1110000:
+                {
+                    switch(tmp->rs2)
+                    {
+                        case 0b00000:
+                        {
+                            switch(tmp->funct3)
+                            {
+                                case 0b000:
+                                {
+                                    stage->fptr = (void *) riscv_fmv_x_w;
+                                    stage->format = INSTR_R;
+                                    stage->op = RISCV_OP_FMV_X_W;
+
+                                    break;
+                                }
+                                case 0b001:
+                                {
+                                    stage->fptr = (void *) riscv_fclass_s;
+                                    stage->format = INSTR_R;
+                                    stage->op = RISCV_OP_FCLASS_S;
+
+                                    break;
+                                }
+                                default:
+                                {
+
+                                }
+                            }
+                            break;
+                        }
+                        default:
+                        {
+
+                        }
+                    }
+                    break;
+                }
+                case 0b1010000:
+                {
+                    switch(tmp->funct3)
+                    {
+                        case 0b000:
+                        {
+                            stage->fptr = (void *) riscv_fle_s;
+                            stage->format = INSTR_R;
+                            stage->op = RISCV_OP_FLE_S;
+
+                            break;
+                        }
+                        case 0b001:
+                        {
+                            stage->fptr = (void *) riscv_flt_s;
+                            stage->format = INSTR_R;
+                            stage->op = RISCV_OP_FLT_S;
+
+                            break;
+                        }
+                        case 0b010:
+                        {
+                            stage->fptr = (void *) riscv_feq_s;
+                            stage->format = INSTR_R;
+                            stage->op = RISCV_OP_FEQ_S;
+
+                            break;
+                        }
+                        default:
+                        {
+
+                        }
+                    }
+                    break;
+                }
+                case 0b1101000:
+                {
+                    switch(tmp->rs2)
+                    {
+                        case 0b00000:
+                        {
+                            stage->fptr = (void *) riscv_fcvt_s_w;
+                            stage->format = INSTR_R_F;
+                            stage->op = RISCV_OP_FCVT_S_W;
+
+                            break;
+                        }
+                        case 0b00001:
+                        {
+                            stage->fptr = (void *) riscv_fcvt_s_wu;
+                            stage->format = INSTR_R_F;
+                            stage->op = RISCV_OP_FCVT_S_WU;
+
+                            break;
+                        }
+                        default:
+                        {
+
+                        }
+                    }
+                    break;
+                }
+                case 0b1111000:
+                {
+                    switch(tmp->rs2)
+                    {
+                        case 0b00000:
+                        {
+                            switch(tmp->funct3)
+                            {
+                                case 0b000:
+                                {
+                                    stage->fptr = (void *) riscv_fmv_w_x;
+                                    stage->format = INSTR_R;
+                                    stage->op = RISCV_OP_FMV_W_X;
+
+                                    break;
+                                }
+                                default:
+                                {
+
+                                }
+                            }
+                            break;
+                        }
+                        default:
+                        {
+
+                        }
+                    }
+                    break;
+                }
+                default:
+                {
+
+                }
+            }
             break;
         }
         default:

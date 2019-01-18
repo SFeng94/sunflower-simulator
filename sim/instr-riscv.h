@@ -40,6 +40,8 @@
 enum
 {
     INSTR_R,
+    INSTR_R_F,  /* INSTR_R but with rounding mode */
+    INSTR_R4,
     INSTR_I,
     INSTR_S,
     INSTR_B,
@@ -64,6 +66,18 @@ typedef struct
     unsigned    rs2:5;
     unsigned    funct7:7;
 } instr_r;
+
+/* sf548 - instr_r4 */
+typedef struct
+{
+    unsigned    opcode:7;
+    unsigned    rd:5;
+    unsigned    funct3:3;
+    unsigned    rs1:5;
+    unsigned    rs2:5;
+    unsigned    func2:2;
+    unsigned    rs3:5;
+} instr_r4;
 
 typedef struct
 {
@@ -120,8 +134,7 @@ typedef struct
     unsigned misc_lo:5;
     unsigned funct3:3;
     unsigned misc_md:5;
-    unsigned b20:1;
-    unsigned misc_hi:4;
+    unsigned rs2:5;
     unsigned funct7:7;
     
 } instr_riscv_decode;

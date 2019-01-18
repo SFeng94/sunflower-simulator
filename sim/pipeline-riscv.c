@@ -37,6 +37,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <fenv.h>
 #include "sf.h"
 #include "instr-riscv.h"
 #include "opstr-riscv.h"
@@ -92,6 +93,74 @@ riscvstep(Engine *E, State *S, int drain_pipe)
 
 				tmp = (instr_r *)&S->riscv->P.EX.instr;
 				(*(S->riscv->P.EX.fptr))(E, S, tmp->rs1, tmp->rs2, tmp->rd);
+				break;
+			}
+
+			case INSTR_R_F:
+			{
+				instr_r *tmp;
+
+				int saved_rm = fegetround();
+				int rm = tmp->funct3 == 0b111 ? (S->riscv->FCSR & 0b11100000) >> 5 : tmp->funct3;
+				switch(rm)
+				{
+					case 0b000: fesetround(FE_TONEAREST); break;
+					case 0b001: fesetround(FE_TOWARDZERO); break;
+					case 0b010: fesetround(FE_DOWNWARD); break;
+					case 0b011: fesetround(FE_UPWARD); break;
+					// This mode is not supported by C/x86.
+					case 0b100: fesetround(FE_TONEAREST); break;
+					default:
+					{
+
+					}
+				}
+				feclearexcept(FE_ALL_EXCEPT);
+
+				tmp = (instr_r *)&S->riscv->P.EX.instr;
+				(*(S->riscv->P.EX.fptr))(E, S, tmp->rs1, tmp->rs2, tmp->rd);
+
+				fesetround(saved_rm);
+				if(fetestexcept(FE_INEXACT)) S->riscv->FCSR |= 0b00001;
+				if(fetestexcept(FE_UNDERFLOW)) S->riscv->FCSR |= 0b00010;
+				if(fetestexcept(FE_OVERFLOW)) S->riscv->FCSR |= 0b00100;
+				if(fetestexcept(FE_DIVBYZERO)) S->riscv->FCSR |= 0b01000;
+				if(fetestexcept(FE_INVALID)) S->riscv->FCSR |= 0b10000;
+
+				break;
+			}
+
+			case INSTR_R4:
+			{
+				instr_r4 *tmp;
+
+				int saved_rm = fegetround();
+				int rm = tmp->funct3 == 0b111 ? (S->riscv->FCSR & 0b11100000) >> 5 : tmp->funct3;
+				switch(rm)
+				{
+					case 0b000: fesetround(FE_TONEAREST); break;
+					case 0b001: fesetround(FE_TOWARDZERO); break;
+					case 0b010: fesetround(FE_DOWNWARD); break;
+					case 0b011: fesetround(FE_UPWARD); break;
+					// This mode is not supported by C/x86.
+					case 0b100: fesetround(FE_TONEAREST); break;
+					default:
+					{
+
+					}
+				}
+				feclearexcept(FE_ALL_EXCEPT);
+
+				tmp = (instr_r4 *)&S->riscv->P.EX.instr;
+				(*(S->riscv->P.EX.fptr))(E, S, tmp->rs1, tmp->rs2, tmp->rs3, tmp->rd);
+
+				fesetround(saved_rm);
+				if(fetestexcept(FE_INEXACT)) S->riscv->FCSR |= 0b00001;
+				if(fetestexcept(FE_UNDERFLOW)) S->riscv->FCSR |= 0b00010;
+				if(fetestexcept(FE_OVERFLOW)) S->riscv->FCSR |= 0b00100;
+				if(fetestexcept(FE_DIVBYZERO)) S->riscv->FCSR |= 0b01000;
+				if(fetestexcept(FE_INVALID)) S->riscv->FCSR |= 0b10000;
+
 				break;
 			}
 
@@ -155,7 +224,7 @@ riscvstep(Engine *E, State *S, int drain_pipe)
 
 		if (SF_BITFLIP_ANALYSIS)
 		{
-			S->Cycletrans += bit_flips_32(tmpPC, S->PC);	
+			S->Cycletrans += bit_flips_32(tmpPC, S->PC);
 			S->Cycletrans = 0;
 		}
 
@@ -180,6 +249,6 @@ riscvdumppipe(Engine *E, State *S)
 		S->NODE_ID, S->PC, S->ICLK, S->sleep);
 
 	mprint(E, S, nodeinfo, "EX: [%s]\n", riscv_opstrs[S->riscv->P.EX.op]);
-	
+
 	return;
 }

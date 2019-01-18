@@ -1,13 +1,19 @@
-#!/bin/sh
+#!/usr/bin/env python3
 
+import sys, os
 
-	if [ $# -ne 1 ]; then
-		echo 1>&2 Usage: $0 "<path to Gnu awk>" 
-		exit 127
-	fi
+opstrFile = open("decode-riscv.h", "r")
+opstrOutput = open("opstr-riscv.h", "w")
 
+opstrOutput.write('char *riscv_opstrs[] =\n{\n')
 
-	echo 'char *riscv_opstrs[] =\'
-	echo '{'
-	cat decode-riscv.h | grep OP | $1 -F',|_' '{print "\t[RISCV_OP_"$3"] \t\t\""$3"\","}'
-	echo '};'
+for eachLine in opstrFile:
+    if 'RISCV_OP' in eachLine:
+        op = eachLine[eachLine.find('RISCV_OP_')+9:eachLine.rfind(',')]
+        line = '    [RISCV_OP_' + op + ']' + '\t= "' + op + '",\n'
+        opstrOutput.write(line)
+
+opstrOutput.write('};')
+
+opstrFile.close()
+opstrOutput.close()

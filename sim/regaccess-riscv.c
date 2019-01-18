@@ -79,3 +79,15 @@ void reg_set_riscv(Engine *E, State *S, uint8_t n, uint32_t data)
 
 	return;
 }
+
+tuck
+float freg_read_riscv(Engine *E, State *S, uint8_t n)
+{
+	return S->riscv->F[n];
+}
+
+tuck
+void freg_set_riscv(Engine *E, State *S, uint8_t n, float data)
+{
+	S->riscv->F[n] = data;
+}

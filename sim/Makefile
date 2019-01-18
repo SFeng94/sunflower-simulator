@@ -69,6 +69,7 @@ OBJS	=\
 	network-hitachi-sh.o\
 	op-hitachi-sh.o\
 	op-riscv.o\
+	op-rv32f.o\
 	pau.o\
 	physics.o\
 	pic.o\
@@ -110,6 +111,10 @@ op-ti-msp430.o: op-ti-msp430.c $(HEADERS) Makefile
 op-riscv.o: op-riscv.c cache-hitachi-sh.c regaccess-riscv.c $(HEADERS) Makefile
 ##	$(LINT) $(CCFLAGS) $(INCLUDEDIRS) op-hitachi-sh.c
 	$(CC) $(CCFLAGS) $(WFLAGS) $(INCLUDEDIRS) $(DBGFLAGS) $(OPTFLAGS) -c op-riscv.c -o $@
+
+op-rv32f.o: op-rv32f.c cache-hitachi-sh.c regaccess-riscv.c $(HEADERS) Makefile
+##	$(LINT) $(CCFLAGS) $(INCLUDEDIRS) op-hitachi-sh.c
+	$(CC) $(CCFLAGS) $(WFLAGS) $(INCLUDEDIRS) $(DBGFLAGS) $(OPTFLAGS) -c op-rv32f.c -o $@
 
 sf.o: sf.tab.c $(HEADERS) Makefile
 	$(CC) $(CCFLAGS) -Wall $(INCLUDEDIRS) $(DBGFLAGS) $(OPTFLAGS) -c sf.tab.c -o $@
