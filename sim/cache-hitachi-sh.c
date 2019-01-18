@@ -67,7 +67,7 @@ SH_write_2(State *S, uchar * target, uint16_t data)
 }
 
 void
-SH_big_endian_write_4(uchar * target, uint16_t data)
+SH_big_endian_write_4(uchar * target, uint32_t data)
 {
 	target[0] = (uchar)((data>>24)&0xFF);
 	target[1] = (uchar)((data>>16)&0xFF);
@@ -78,7 +78,7 @@ SH_big_endian_write_4(uchar * target, uint16_t data)
 }
 
 void
-SH_little_endian_write_4(uchar * target, uint16_t data)
+SH_little_endian_write_4(uchar * target, uint32_t data)
 {
 	target[3] = (uchar)((data>>24)&0xFF);
 	target[2] = (uchar)((data>>16)&0xFF);
@@ -89,7 +89,7 @@ SH_little_endian_write_4(uchar * target, uint16_t data)
 }
 
 void
-SH_write_4(State * S, uchar * target, uint16_t data)
+SH_write_4(State * S, uchar * target, uint32_t data)
 {
 	if (S->endian == Little)
 	{
@@ -118,11 +118,11 @@ SH_read_2(State * S, uchar * target)
 {
 	if (S->endian == Little)
 	{
-		SH_little_endian_read_2(target);
+		return SH_little_endian_read_2(target);
 	}
 	else
 	{
-		SH_big_endian_read_2(target);
+		return SH_big_endian_read_2(target);
 	}
 }
 
@@ -143,11 +143,11 @@ SH_read_4(State * S, uchar * target)
 {
 	if (S->endian == Little)
 	{
-		SH_little_endian_read_4(target);
+		return SH_little_endian_read_4(target);
 	}
 	else
 	{
-		SH_big_endian_read_4(target);
+		return SH_big_endian_read_4(target);
 	}
 }
 

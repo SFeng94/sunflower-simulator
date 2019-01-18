@@ -43,7 +43,7 @@
 #include "instr-riscv.h"
 #include "mextern.h"
 
-uint32_t sign_extend(uint32_t data, uint8_t n)
+static uint32_t sign_extend(uint32_t data, uint8_t n)
 {
 	uint32_t sign_mask = 1 << (n-1);
 	uint32_t valid_bits;
@@ -268,7 +268,6 @@ void riscv_auipc(Engine *E, State *S, uint8_t rd, uint32_t imm0)
 void riscv_jal(Engine *E, State *S, uint8_t rd, uint16_t imm1, uint8_t imm11, uint8_t imm12, uint8_t imm20)
 {
 	int32_t offset = sign_extend((imm1 << 1) + (imm11 << 11) + (imm12 << 12) + (imm20 << 20), 21);
-
 	reg_set_riscv(E, S, rd, S->PC);
 	S->PC += offset - 4;
 
@@ -277,12 +276,10 @@ void riscv_jal(Engine *E, State *S, uint8_t rd, uint16_t imm1, uint8_t imm11, ui
 
 void riscv_jalr(Engine *E, State *S, uint8_t rs1, uint8_t rd, uint16_t imm0)
 {
-	int32_t offset = (int32_t) sign_extend(imm0, 12) + (int32_t) reg_read_riscv(E, S, rs1);
-	
-	uint32_t mask = -2;
+	uint32_t target = ((int32_t) sign_extend(imm0, 12) + (int32_t) reg_read_riscv(E, S, rs1)) & -2;
 
 	reg_set_riscv(E, S, rd, S->PC);
-	S->PC = (S->PC + offset - 4) & mask;
+	S->PC = target;
 
 	return;
 }
